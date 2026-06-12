@@ -1,26 +1,366 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core High-Contrast White Mode Palette */
+  --canvas-bg: #f4f5f8;        /* Latar belakang halaman utama */
+  --surface-white: #ffffff;    /* Latar belakang kartu & panel utama */
+  --surface-pearl: #f8f9fa;    /* Background wrapper kamera & kontrol berat */
+  
+  /* High-Contrast Typography Color Tones */
+  --ink-primary: #111112;      /* Kontras Tinggi: Judul, teks utama, angka total */
+  --ink-muted: #4e4e52;        /* Kontras Tinggi: Sub-judul & label sekunder */
+  --ink-disabled: #8e8e93;     /* Teks deskripsi pembantu / placeholder */
+  
+  /* Brand Actions & Borders */
+  --action-blue: #0066cc;      
+  --action-focus: #004499;     
+  --hairline-border: #dcdce2;  /* Garis pembatas yang dipertegas untuk mode terang */
+  
+  /* Soft Radius System */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+
+  /* Universal Soft Visual Depth */
+  --product-shadow: rgba(17, 17, 18, 0.06) 0px 8px 24px 0px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--canvas-bg);
+  --color-foreground: var(--ink-primary);
+  --font-sans: "Poppins", system-ui, -apple-system, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  background-color: var(--canvas-bg);
+  color: var(--ink-primary);
+  font-family: "Poppins", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   LAYOUT & HEADER CONFIGURATIONS
+   ========================================================================== */
+
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 32px 64px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0 28px;
+  border-bottom: 1px solid var(--hairline-border);
+  margin-bottom: 48px;
+  background: transparent;
+}
+
+.header-center {
+  text-align: center;
+}
+
+.header-title {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--ink-primary);
+}
+
+.header-sub {
+  font-size: 15px;
+  color: var(--ink-muted);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.workspace {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 32px;
+  align-items: start;
+}
+
+.panel {
+  background: var(--surface-white);
+  border: 1px solid var(--hairline-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.panel-label {
+  padding: 24px 24px 12px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  background: var(--surface-white);
+}
+
+/* ==========================================================================
+   CAMERA CANVAS INTERFACE
+   ========================================================================== */
+
+.camera-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.canvas-container {
+  position: relative;
+  width: 100%;
+  background: var(--surface-pearl);
+  padding: 24px;
+}
+
+.visible-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  box-shadow: var(--product-shadow);
+  border-radius: var(--radius-md);
+  background: var(--surface-white);
+  border: 1px solid var(--hairline-border);
+}
+
+/* ==========================================================================
+   PRODUCT ORDER CARDS
+   ========================================================================== */
+
+.receipt-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 540px;
+}
+
+.section-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin-bottom: 12px;
+}
+
+.product-card {
+  background: var(--surface-white);
+  border: 1px solid var(--hairline-border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-card.detected {
+  border-color: var(--action-blue);
+  border-width: 1.5px;
+}
+
+.product-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink-primary);
+}
+
+.product-price-per-kg {
+  font-size: 15px;
+  color: var(--ink-muted);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.per-kg {
+  font-size: 13px;
+  color: var(--ink-disabled);
+}
+
+.product-card.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  background: var(--surface-pearl);
+  border-color: var(--ink-disabled);
+}
+
+.scan-prompt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+.scan-icon {
+  font-size: 18px;
+  color: var(--action-blue);
+}
+
+/* ==========================================================================
+   NEW REDESIGNED INTERACTIVE COMPONENTS (RESET & WEIGHT FIELD)
+   ========================================================================== */
+
+/* Desain Baru: Tombol Reset Minimalis Elegan */
+.reset-btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ff3b30;                /* Warna merah sistem soft khas Apple */
+  background-color: #fff2f2;     /* Background merah muda super lembut */
+  border: 1px solid rgba(255, 59, 48, 0.15);
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.reset-btn:active {
+  transform: scale(0.95);
+  background-color: #ffe5e5;
+}
+
+/* Desain Baru: Field Penambah Berat Kapsul Terintegrasi */
+.weight-control {
+  display: flex;
+  align-items: center;
+  background-color: var(--surface-pearl);
+  border: 1px solid var(--hairline-border);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+}
+
+.weight-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background-color: var(--surface-white);
+  color: var(--action-blue);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04); /* Elevasi tombol mikro */
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.weight-btn:active {
+  transform: scale(0.9);
+  background-color: var(--canvas-bg);
+}
+
+.weight-input {
+  width: 64px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  color: var(--ink-primary);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--hairline-border);
+}
+
+/* ==========================================================================
+   TOTAL SUMMARIES & CTAS
+   ========================================================================== */
+
+.total-section {
+  padding: 4px 0;
+}
+
+.total-label {
+  font-size: 14px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* Angka total belanjaan dibuat super kontras pekat */
+.total-amount {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink-primary); /* Menggunakan warna arang pekat mutlak */
+  letter-spacing: -0.02em;
+}
+
+.total-amount.active {
+  color: var(--ink-primary); 
+}
+
+.checkout-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius-pill);
+  border: none;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease;
+}
+
+.checkout-btn.ready {
+  background-color: var(--action-blue);
+  color: var(--surface-white);
+}
+
+.checkout-btn.ready:active {
+  transform: scale(0.96);
+  background-color: var(--action-focus);
+}
+
+.checkout-btn.disabled {
+  background-color: var(--surface-pearl);
+  color: var(--ink-disabled);
+  border: 1px solid var(--hairline-border);
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   RESPONSIVE OVERRIDES
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .app-shell {
+    padding: 0 24px 48px;
+  }
 }
