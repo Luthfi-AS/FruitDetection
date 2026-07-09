@@ -4,10 +4,12 @@ import { useState } from "react";
 import CameraStream, { ItemDetection } from "./components/CameraStream";
 import ReceiptPanel, { CartItem } from "./components/ReceiptPanel";
 
-// 1. Fallback ke localhost untuk dev lokal, dan bersihkan garis miring di akhir string
-const BASE_URL = (
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-).replace(/\/$/, "");
+// 1. Fallback ke localhost untuk dev lokal. Tanda kutip ikut dibuang karena nilai
+//    env sering disalin dari YAML/.env beserta kutipnya, yang membuat URL relatif.
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")
+  .trim()
+  .replace(/^["']|["']$/g, "")
+  .replace(/\/$/, "");
 
 // 2. Tambahkan route /api/detect secara eksplisit agar tembakan API tepat sasaran
 const API_ENDPOINT = `${BASE_URL}/api/detect`;
@@ -92,9 +94,7 @@ export default function HomePage() {
       <header className="app-header" style={{ justifyContent: "center" }}>
         <div className="header-center">
           <h1 className="header-title">Kasir Mandiri Otomatis</h1>
-          <p className="header-sub">
-            Sistem Kasir Timbangan — Pindai Item Satu per Satu
-          </p>
+          <p className="header-sub">Pindai Item Satu per Satu</p>
           {/* Indikator UI elegan jika server API mati atau sedang Cold Start */}
           {!apiOnline && (
             <div
