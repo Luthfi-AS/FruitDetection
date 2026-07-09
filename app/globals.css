@@ -25,6 +25,11 @@
 
   /* Universal Soft Visual Depth */
   --product-shadow: rgba(17, 17, 18, 0.06) 0px 8px 24px 0px;
+
+  /* Ruang vertikal yang dipakai elemen di luar canvas: header, label panel,
+     padding container, dan padding bawah shell. Dipakai untuk menghitung sisa
+     tinggi viewport agar canvas tidak pernah mendorong halaman melewati layar. */
+  --page-chrome: 296px;
 }
 
 @theme inline {
@@ -60,18 +65,18 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  max-width: 1440px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 0 32px 64px;
+  padding: 0 32px 32px;
 }
 
 .app-header {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 0 28px;
+  padding: 24px 0 18px;
   border-bottom: 1px solid var(--hairline-border);
-  margin-bottom: 48px;
+  margin-bottom: 24px;
   background: transparent;
 }
 
@@ -80,7 +85,7 @@ body {
 }
 
 .header-title {
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.01em;
@@ -97,8 +102,9 @@ body {
 .workspace {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 32px;
+  /* minmax(0, …) mencegah kolom kamera melebar mengikuti canvas 640px intrinsik */
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 24px;
   align-items: start;
 }
 
@@ -110,7 +116,7 @@ body {
 }
 
 .panel-label {
-  padding: 24px 24px 12px 24px;
+  padding: 16px 20px 10px 20px;
   font-size: 14px;
   font-weight: 700;
   color: var(--ink-muted);
@@ -130,12 +136,16 @@ body {
   position: relative;
   width: 100%;
   background: var(--surface-pearl);
-  padding: 24px;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
 }
 
 .visible-canvas {
   display: block;
-  width: 100%;
+  /* Canvas selalu persegi. Lebarnya diambil dari nilai terkecil antara lebar
+     kolom dan sisa tinggi viewport, sehingga tidak pernah terpotong di bawah. */
+  width: min(100%, clamp(240px, calc(100vh - var(--page-chrome)), 560px));
   height: auto;
   aspect-ratio: 1;
   box-shadow: var(--product-shadow);
@@ -149,11 +159,12 @@ body {
    ========================================================================== */
 
 .receipt-panel {
-  padding: 24px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  min-height: 540px;
+  gap: 18px;
+  /* Ikut menyusut pada layar pendek, jadi tidak memaksa halaman ikut memanjang */
+  min-height: min(540px, calc(100vh - 200px));
 }
 
 .section-label {
